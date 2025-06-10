@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>loser music</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <meta property="og:title" content="76xk | loser" />
+  <meta property="og:description" content="using api by 76xk" />
+  <meta property="og:url" content="https://i.am.a.rapist.gatorkeys.xyz/" />
+  <meta property="og:type" content="website" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      color: #fff;
+      overflow: hidden;
+    }
+    body {
+      overflow-y: scroll;
+      font-family: sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+    video#bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+    #spotify {
+      width: auto;
+      max-width: 95%;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(30, 30, 30, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      padding: 15px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    #search-bar {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    #songs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .spotify-track {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 100%;
+      color: #fff;
+      flex-wrap: wrap;
+    }
+    .spotify-cover {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .spotify-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+      color: #fff;
+      flex: 1;
+      min-width: 0;
+    }
+    .track-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    strong, span {
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #total-count {
+      font-size: 16px;
+      margin-bottom: 1px;
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      .spotify-track {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .spotify-info {
+        flex
+        : 1;
+flex-direction: column;
+align-items: flex-start;
+gap: 6px;
+white-space: normal;
+}
+.spotify-cover {
+width: 50px;
+height: 50px;
+}
+#search-bar {
+font-size: 16px;
+padding: 10px 14px;
+}
+#total-count {
+font-size: 14px;
+}
+}
+</style>
+
+</head> <body> <video id="bg-video" autoplay muted loop> <source src="assets/spotify.mp4" type="video/mp4"> </video> <div id="spotify"> <input id="search-bar" type="text" placeholder="search songs or artists"> <div id="total-count">total songs: 0</div> <div id="songs-container"></div> </div> <script> let allSongs = []; function displaySongs(songs) { const container = document.getElementById("songs-container"); container.innerHTML = ""; songs.forEach(song => { if (!song.track || !song.artist || !song.album_art_url) return; const el = document.createElement("div"); el.className = "spotify-track"; el.innerHTML = ` <img class="spotify-cover" src="${song.album_art_url}" /> <div class="spotify-info"> <div class="track-details"> <div style="display: flex; align-items: center; gap: 6px;"> <img src="icons/spotify.gif" alt="Now Playing" style="width: 16px; height: 16px;"> <strong>${song.track}</strong> </div> <span>${song.artist}</span> </div> </div> `; container.appendChild(el); }); document.getElementById("total-count").textContent = "total songs: " + songs.length; } async function fetchAndDisplaySongs() { try { const res = await fetch("https://raw.githubusercontent.com/aesvo/loseryard/main/loser.json?" + Date.now(), { cache: "no-store" }); const data = await res.json(); allSongs = data.songs || []; displaySongs(allSongs); } catch (err) { console.error("Failed to fetch or display songs:", err); } } document.getElementById("search-bar").addEventListener("input", (e) => { const query = e.target.value.toLowerCase(); const filtered = allSongs.filter(song => (song.track && song.track.toLowerCase().includes(query)) || (song.artist && song.artist.toLowerCase().includes(query)) ); displaySongs(filtered); }); document.addEventListener("DOMContentLoaded", fetchAndDisplaySongs); </script> </body> </html>
