@@ -22,15 +22,38 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-
     body {
       overflow-y: auto;
       scrollbar-width: none;
     }
-
     body::-webkit-scrollbar {
       width: 0;
       height: 0;
+    }
+
+    #reveal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+    #reveal.hide {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
     }
 
     video#bg-video {
@@ -44,10 +67,9 @@
       filter: brightness(0.5);
       transition: filter 0.3s ease;
     }
-
     #spotify {
       max-width: 800px;
-      margin: 60px auto;
+      margin: 100px auto 60px;
       background: transparent;
       padding: 20px;
       opacity: 0;
@@ -56,7 +78,6 @@
       position: relative;
       z-index: 1;
     }
-
     #search-bar {
       width: 100%;
       padding: 12px 16px;
@@ -71,27 +92,22 @@
       caret-color: white;
       transition: background 0.3s ease, transform 0.2s ease;
     }
-
     #search-bar:focus {
       background: rgba(255, 255, 255, 0.05);
       transform: scale(1.02);
     }
-
     input:-webkit-autofill {
       box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.4) inset !important;
       -webkit-text-fill-color: #fff !important;
     }
-
     input {
       -webkit-user-select: none;
       user-select: none;
       -webkit-appearance: none;
     }
-
     input::-webkit-input-placeholder {
       color: #aaa;
     }
-
     #total-count {
       font-size: 16px;
       margin-bottom: 6px;
@@ -99,14 +115,12 @@
       transition: opacity 0.3s ease;
       text-align: center;
     }
-
     #songs-container {
       display: flex;
       flex-direction: column;
       gap: 14px;
       will-change: transform, opacity;
     }
-
     .spotify-track {
       display: flex;
       align-items: center;
@@ -120,28 +134,25 @@
       opacity: 0;
       transform: translateY(16px);
       animation: fadeSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      cursor: pointer;
     }
-
     @keyframes fadeSlideIn {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes fadeInSmooth {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     .spotify-track:hover {
       background-color: rgba(255, 255, 255, 0.05);
       transform: scale(1.01);
       transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
     }
-
     .spotify-cover {
       width: 60px;
       height: 60px;
@@ -150,22 +161,18 @@
       flex-shrink: 0;
       transition: transform 0.3s ease;
     }
-
     .spotify-cover:hover {
       transform: scale(1.05);
     }
-
     .spotify-info {
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-
     .track-details {
       display: flex;
       flex-direction: column;
     }
-
     .track-details strong {
       font-size: 15px;
       font-weight: 600;
@@ -175,7 +182,6 @@
       white-space: nowrap;
       transition: color 0.2s ease;
     }
-
     .track-details span {
       font-size: 14px;
       color: #ccc;
@@ -184,7 +190,6 @@
       white-space: nowrap;
       transition: color 0.2s ease;
     }
-
     #bottom-shadow {
       position: fixed;
       bottom: 0;
@@ -195,26 +200,21 @@
       pointer-events: none;
       z-index: 3;
     }
-
     @media (max-width: 600px) {
       .spotify-track {
         flex-direction: column;
         align-items: flex-start;
       }
-
       .spotify-cover {
         width: 50px;
         height: 50px;
       }
-
       .track-details strong {
         font-size: 14px;
       }
-
       .track-details span {
         font-size: 13px;
       }
-
       #bottom-shadow {
         height: 40px;
       }
@@ -222,6 +222,10 @@
   </style>
 </head>
 <body>
+  <div id="reveal">hi</div>
+
+  <audio id="song-audio" src="assets/lol.mp3"></audio>
+
   <video id="bg-video" autoplay muted loop>
     <source src="assets/spotify.mp4" type="video/mp4">
   </video>
@@ -235,6 +239,12 @@
   <div id="bottom-shadow"></div>
 
   <script>
+    document.getElementById("reveal").addEventListener("click", () => {
+      document.getElementById("reveal").classList.add("hide");
+      const audio = document.getElementById("song-audio");
+      audio.play().catch(() => {});
+    });
+
     let allSongs = [];
 
     function displaySongs(songs) {
@@ -251,9 +261,15 @@
             <div class="track-details">
               <strong>${song.track}</strong>
               <span>${song.artist}</span>
+              ${song.track_url ? '' : '<span>no track URL found (was logged before added)</span>'}
             </div>
           </div>
         `;
+        if (song.track_url) {
+          el.addEventListener("click", () => {
+            window.open(song.track_url, "_blank");
+          });
+        }
         container.appendChild(el);
       });
       document.getElementById("total-count").textContent = "total songs: " + songs.length;
@@ -271,8 +287,6 @@
         console.error("Failed to fetch or display songs:", err);
       }
     }
-
-    
 
     document.getElementById("search-bar").addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase();
